@@ -4,6 +4,7 @@
 // and https://www.facebook.com/groups/5251478676/posts/10161388995313677/ .
 module main
 
+import os.asset
 import gg
 import rand
 import time
@@ -79,6 +80,12 @@ mut:
 	ymax         f32
 	player_timer time.StopWatch = time.new_stopwatch()
 	balls_timer  time.StopWatch = time.new_stopwatch()
+    // images:
+	ienemy gg.Image
+	iball gg.Image
+	iland gg.Image
+	iwater gg.Image
+	iplayer gg.Image
 }
 
 fn main() {
@@ -90,12 +97,21 @@ fn main() {
 		height:        wheight + lheight
 		create_window: true
 		window_title:  'Vixanix'
+		init_fn: init_fn
 		frame_fn:      frame
 		user_data:     app
 		event_fn:      event
 		sample_count:  2
 	)
 	app.gg.run()
+}
+
+fn init_fn(mut app App) {
+   app.ienemy = app.gg.create_image(asset.get_path('resources/', 'enemy.png')) or { panic(err) }
+   app.iball = app.gg.create_image(asset.get_path('resources/', 'ball.png')) or { panic(err) }   
+   app.iland = app.gg.create_image(asset.get_path('resources/', 'land.png')) or { panic(err) }   
+   app.iwater = app.gg.create_image(asset.get_path('resources/', 'water.png')) or { panic(err) }   
+   app.iplayer = app.gg.create_image(asset.get_path('resources/', 'player.png')) or { panic(err) }
 }
 
 fn (mut app App) reset() {
@@ -400,14 +416,18 @@ fn (mut app App) draw_cell(x int, y int) {
 	if x < 0 || y < 0 || x > cmax_x || y > cmax_y {
 		return
 	}
-	cstate := app.cells[y][x]
-	color := match cstate {
-		.space { cspace }
-		.land { cland }
-		.trail { ctrail }
-	}
 	cy, cx := y * app.csize.y, x * app.csize.x
-	app.gg.draw_rect_filled(cx, cy, app.csize.x, app.csize.y, color)
+	match app.cells[y][x] {
+	   .space {
+	   		app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.iwater)
+	   }
+	   .land {
+	   		app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.iland)
+	   }
+	   .trail {
+			app.gg.draw_rect_filled(cx, cy, app.csize.x, app.csize.y, ctrail)
+	   }
+	}
 }
 
 @[direct_array_access]
@@ -420,28 +440,21 @@ fn (mut app App) draw_grid() {
 }
 
 fn (mut app App) draw_player() {
-	app.gg.draw_rect_filled(app.player.pos.x * app.csize.x, app.player.pos.y * app.csize.y,
-		app.csize.x, app.csize.y, cplayer_border)
-	app.gg.draw_rect_filled(app.player.pos.x * app.csize.x + 1, app.player.pos.y * app.csize.y + 1,
-		app.csize.x - 2, app.csize.y - 2, cplayer_center)
+   app.gg.draw_image(app.player.pos.x * app.csize.x, app.player.pos.y * app.csize.y, app.csize.x, app.csize.y, app.iplayer)
 }
 
 fn (mut app App) draw_enemies() {
 	radius := app.csize.x * 2 / 5
 	for e in app.enemies {
 		cx, cy := e.pos.x + radius - 3, e.pos.y + radius - 3
-		app.gg.draw_circle_filled(cx, cy, radius, cenemy_border)
-		app.gg.draw_circle_filled(cx, cy, 2, cenemy_center)
+		app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.ienemy)
 	}
 }
 
 fn (mut app App) draw_balls() {
 	radius := app.csize.x / 2
 	for b in app.balls {
-		x, y := app.fx(b.pos.x), app.fy(b.pos.y)
-		app.draw_cell(x, y)
 		cx, cy := b.pos.x + radius - 8, b.pos.y + radius - 9
-		app.gg.draw_circle_filled(cx, cy, radius, cball_border)
-		app.gg.draw_circle_filled(cx, cy, 2, cball_center)
+		app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.iball)
 	}
 }
