@@ -304,6 +304,7 @@ fn (mut app App) kill_player() {
 	app.player.trail.clear()
 	if app.player.lives == 0 {
 		println('Game Over, points: ${app.player.points}, level: ${app.level}')
+		app.level = 1
 		app.reset()
 	}
 	app.show_grid = true
@@ -347,7 +348,7 @@ fn event(e &gg.Event, mut app App) {
 		app.gg.quit()
 	}
 	if e.key_code == .r {
-		app.reset()
+		app.restart_level()
 	}
 	app.player.newdir = match e.key_code {
 		.left { Vec{-1, 0} }
