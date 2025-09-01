@@ -102,6 +102,7 @@ fn main() {
 		user_data:     app
 		event_fn:      event
 		sample_count:  2
+		font_path:     asset.get_path('resources/', 'Graduate-Regular.ttf')
 	)
 	app.gg.run()
 }
@@ -398,7 +399,7 @@ fn frame(mut app App) {
 fn (mut app App) draw_text(x int, s string, color gg.Color) {
 	app.gg.draw_text(x, app.wsize.height - lheight + 6, s,
 		color: color
-		size:  20
+		size:  16
 	)
 }
 
