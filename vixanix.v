@@ -444,9 +444,9 @@ fn (mut app App) draw_player() {
 }
 
 fn (mut app App) draw_enemies() {
-	radius := app.csize.x * 2 / 5
+	radius := app.csize.x / 2
 	for e in app.enemies {
-		cx, cy := e.pos.x + radius - 3, e.pos.y + radius - 3
+		cx, cy := e.pos.x - radius, e.pos.y - radius
 		app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.ienemy)
 	}
 }
