@@ -80,11 +80,11 @@ mut:
 	ymax         f32
 	player_timer time.StopWatch = time.new_stopwatch()
 	balls_timer  time.StopWatch = time.new_stopwatch()
-    // images:
-	ienemy gg.Image
-	iball gg.Image
-	iland gg.Image
-	iwater gg.Image
+	// images:
+	ienemy  gg.Image
+	iball   gg.Image
+	iland   gg.Image
+	iwater  gg.Image
 	iplayer gg.Image
 }
 
@@ -97,7 +97,7 @@ fn main() {
 		height:        wheight + lheight
 		create_window: true
 		window_title:  'Vixanix'
-		init_fn: init_fn
+		init_fn:       init_fn
 		frame_fn:      frame
 		user_data:     app
 		event_fn:      event
@@ -107,11 +107,11 @@ fn main() {
 }
 
 fn init_fn(mut app App) {
-   app.ienemy = app.gg.create_image(asset.get_path('resources/', 'enemy.png')) or { panic(err) }
-   app.iball = app.gg.create_image(asset.get_path('resources/', 'ball.png')) or { panic(err) }   
-   app.iland = app.gg.create_image(asset.get_path('resources/', 'land.png')) or { panic(err) }   
-   app.iwater = app.gg.create_image(asset.get_path('resources/', 'water.png')) or { panic(err) }   
-   app.iplayer = app.gg.create_image(asset.get_path('resources/', 'player.png')) or { panic(err) }
+	app.ienemy = app.gg.create_image(asset.get_path('resources/', 'enemy.png')) or { panic(err) }
+	app.iball = app.gg.create_image(asset.get_path('resources/', 'ball.png')) or { panic(err) }
+	app.iland = app.gg.create_image(asset.get_path('resources/', 'land.png')) or { panic(err) }
+	app.iwater = app.gg.create_image(asset.get_path('resources/', 'water.png')) or { panic(err) }
+	app.iplayer = app.gg.create_image(asset.get_path('resources/', 'player.png')) or { panic(err) }
 }
 
 fn (mut app App) reset() {
@@ -418,15 +418,15 @@ fn (mut app App) draw_cell(x int, y int) {
 	}
 	cy, cx := y * app.csize.y, x * app.csize.x
 	match app.cells[y][x] {
-	   .space {
-	   		app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.iwater)
-	   }
-	   .land {
-	   		app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.iland)
-	   }
-	   .trail {
+		.space {
+			app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.iwater)
+		}
+		.land {
+			app.gg.draw_image(cx, cy, app.csize.x, app.csize.y, app.iland)
+		}
+		.trail {
 			app.gg.draw_rect_filled(cx, cy, app.csize.x, app.csize.y, ctrail)
-	   }
+		}
 	}
 }
 
@@ -440,7 +440,8 @@ fn (mut app App) draw_grid() {
 }
 
 fn (mut app App) draw_player() {
-   app.gg.draw_image(app.player.pos.x * app.csize.x, app.player.pos.y * app.csize.y, app.csize.x, app.csize.y, app.iplayer)
+	app.gg.draw_image(app.player.pos.x * app.csize.x, app.player.pos.y * app.csize.y,
+		app.csize.x, app.csize.y, app.iplayer)
 }
 
 fn (mut app App) draw_enemies() {
