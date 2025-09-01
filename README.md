@@ -5,4 +5,4 @@ and https://www.facebook.com/groups/5251478676/posts/10161388995313677/ .
 
 This remake is in the [V language](https://github.com/vlang/v) .
 
-![ScreenShot](screenshot.png)
+![ScreenShot](resources/screenshot.png)
