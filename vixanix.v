@@ -79,7 +79,6 @@ mut:
 	ymax         f32
 	player_timer time.StopWatch = time.new_stopwatch()
 	balls_timer  time.StopWatch = time.new_stopwatch()
-	show_grid    bool           = true
 }
 
 fn main() {
@@ -249,7 +248,6 @@ fn (mut app App) move_player() {
 		app.fill_trailed_zone()
 		app.player.trail.clear()
 		nc := app.refresh_area()
-		// app.player.newdir = Vec{0, 0}
 		app.player.points += (nc - oc)
 		if app.filled > 75.0 {
 			app.next_level()
@@ -289,7 +287,6 @@ fn (mut app App) refresh_area() int {
 		}
 	}
 	app.filled = f32(100 * c) / f32(cmax_y * cmax_x)
-	app.show_grid = true
 	return c
 }
 
@@ -307,7 +304,6 @@ fn (mut app App) kill_player() {
 		app.level = 1
 		app.reset()
 	}
-	app.show_grid = true
 }
 
 fn (mut app App) move_balls() {
@@ -335,14 +331,10 @@ fn (mut app App) move_enemies() {
 
 fn event(e &gg.Event, mut app App) {
 	if e.typ == .resized {
-		app.show_grid = true
 		return
 	}
 	if e.typ != .key_down {
 		return
-	}
-	if e.key_code == .g {
-		app.show_grid = !app.show_grid
 	}
 	if e.key_code == .escape {
 		app.gg.quit()
@@ -370,26 +362,21 @@ fn frame(mut app App) {
 		sgl.scale(sx, sy, 0)
 		if app.balls_timer.elapsed().milliseconds() > balls_update_period_ms {
 			app.balls_timer.restart()
-			app.draw_balls_background()
 			app.move_balls()
 			app.move_enemies()
 		}
 		if app.player_timer.elapsed().milliseconds() > player_update_period_ms {
 			app.player_timer.restart()
-			app.draw_cells_around(int(app.player.pos.x), int(app.player.pos.y))
 			app.move_player()
 		}
-		if app.show_grid || app.gg.frame == 0 {
-			app.draw_grid()
-		}
+		app.draw_grid()
 		app.draw_balls()
 		app.draw_player()
 		app.draw_enemies()
 	}
 	sgl.pop_matrix()
 	app.draw_labels()
-	app.gg.end(how: .passthru)
-	app.show_grid = false
+	app.gg.end()
 }
 
 fn (mut app App) draw_text(x int, s string, color gg.Color) {
@@ -421,12 +408,10 @@ fn (mut app App) draw_cell(x int, y int) {
 	}
 	cy, cx := y * app.csize.y, x * app.csize.x
 	app.gg.draw_rect_filled(cx, cy, app.csize.x, app.csize.y, color)
-	app.gg.draw_rect_empty(cx + 2, cy + 2, app.csize.x - 4, app.csize.y - 4, ccell_border)
 }
 
 @[direct_array_access]
 fn (mut app App) draw_grid() {
-	app.gg.draw_rect_filled(0, 0, app.xmax, app.ymax, cscreen)
 	for y in 0 .. cmax_y {
 		for x in 0 .. cmax_x {
 			app.draw_cell(x, y)
@@ -450,27 +435,7 @@ fn (mut app App) draw_enemies() {
 	}
 }
 
-fn (mut app App) draw_cells_around(x int, y int) {
-	for sy in y - 2 .. y + 2 {
-		for sx in x - 2 .. x + 2 {
-			app.draw_cell(sx, sy)
-		}
-	}
-}
-
-fn (mut app App) draw_balls_background() {
-	for b in app.balls {
-		x, y := app.fx(b.pos.x), app.fy(b.pos.y)
-		app.draw_cells_around(x, y)
-	}
-	for b in app.enemies {
-		x, y := app.fx(b.pos.x), app.fy(b.pos.y)
-		app.draw_cells_around(x, y)
-	}
-}
-
 fn (mut app App) draw_balls() {
-	app.draw_balls_background()
 	radius := app.csize.x / 2
 	for b in app.balls {
 		x, y := app.fx(b.pos.x), app.fy(b.pos.y)
