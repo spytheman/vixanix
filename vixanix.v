@@ -403,13 +403,26 @@ fn (mut app App) draw_text(x int, s string, color gg.Color) {
 	)
 }
 
+@[manualfree]
 fn (mut app App) draw_labels() {
 	app.gg.draw_rect_filled(0, app.wsize.height - lheight, app.wsize.width, lheight, cinfo_area)
-	app.draw_text(5, 'Points: ${app.player.points:06}', cinfo)
-	app.draw_text(143, 'Land: ${app.filled:02.0f}%', cinfo)
-	app.draw_text(250, 'Lives: ${app.player.lives:02}', cinfo)
-	app.draw_text(340, 'Level: ${app.level:02}', cinfo)
-	app.draw_text(app.wsize.width - 280, 'Controls: arrows, space, escape', cinfo_keys)
+	l1 := 'Points: ${app.player.points:06}'
+	l2 := 'Land: ${app.filled:02.0f}%'
+	l3 := 'Lives: ${app.player.lives:02}'
+	l4 := 'Level: ${app.level:02}'
+	l5 := 'Controls: arrows, space, escape'
+	app.draw_text(5, l1, cinfo)
+	app.draw_text(143, l2, cinfo)
+	app.draw_text(250, l3, cinfo)
+	app.draw_text(340, l4, cinfo)
+	app.draw_text(app.wsize.width - 280, l5, cinfo_keys)
+	unsafe {
+		l5.free()
+		l4.free()
+		l3.free()
+		l2.free()
+		l1.free()
+	}
 }
 
 @[direct_array_access]
